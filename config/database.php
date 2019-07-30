@@ -1,6 +1,6 @@
 <?
 // load in packages 
-require_once 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 // initialize DotEnv for environment variables 
 $dotenv = Dotenv\Dotenv::create(__DIR__);
@@ -19,10 +19,8 @@ try {
         $db["pass"],
         ltrim($db["path"], "/")
     ));
-    echo "Connected successfully.";
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage() . "<br/>";
+    echo "Error connecting to database: " . $e->getMessage() . "<br/>";
     die(); 
 }
-
 ?>
