@@ -22,14 +22,16 @@ class JWT {
     // user info to store in token 
     private $id; 
     private $seminar; 
+    private $firstname; 
     private $serializer; 
     private $algManager; 
     private $key; 
 
     // constructor
-    public function __construct($id, $sem){
+    public function __construct($id, $sem, $firstname){
         $this->id = $id; 
         $this->seminar = $sem; 
+        $this->firstname = $firstname; 
         $this->serializer = new CompactSerializer(); 
         $this->algManager = new AlgorithmManager([
             new HS256()
@@ -49,24 +51,25 @@ class JWT {
     }
 
     // payload generator helper function
-    private function getPayload() {
+    private function generatePayload() {
         return json_encode([
             'iat' => time(), // issued at
             'nbf' => time(), // not before 
             'exp' => time() + 3600, // expiration
             'iss' => 'Montage', // issuer 
             'sem' => $this->seminar, // seminar
-            'id' => $this->id // sid
+            'id' => $this->id, // sid
+            'name' => $this->firstname
         ]);
     }
 
     // create JWS 
-    public function getJWS() {
+    public function generateJWS() {
         // instantiate JWS builder
         $jwsBuilder = new JWSBuilder($this->algManager);
         $jws = $jwsBuilder
             ->create()                                  // create a new JWS 
-            ->withPayload($this->getPayload())
+            ->withPayload($this->generatePayload())
             ->addSignature($this->key, ['alg' => 'HS256'])   // add a signature with a simple protected header
             ->build(); 
         // serialize the jws obj
@@ -95,7 +98,7 @@ class JWT {
                 new Checker\ExpirationTimeChecker()
             ]
         );
-        $claims = json_decode($jws->getPayload(), true);
+        $claims = json_decode($jws->generatePayload(), true);
         try {
             // header checker will throw an exception if param is missing
             $headerCheckerManager->check($jws, 0, ['alg']);

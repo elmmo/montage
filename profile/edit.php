@@ -26,8 +26,10 @@
 <?php 
 require_once '../config/database.php'; 
 
+$db = new Database(); 
+
 if (isset($_POST['submit'])) {
-    $update = $pdo->prepare('UPDATE users SET firstname = ?, lastname = ?, email = ?, bio = ?, major = ?, minor = ?, insta = ?, fb = ?, snap = ? WHERE username IS elmmo');
+    $update = $db->pdo->prepare('UPDATE users SET firstname = ?, lastname = ?, email = ?, bio = ?, major = ?, minor = ?, insta = ?, fb = ?, snap = ? WHERE username IS elmmo');
     $update->execute([$_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['bio'], $_POST['major'], $_POST['minor'], $_POST['insta'], $_POST['fb'], $_POST['snap']]);
     if ($update) {
         echo "Updated successfully."; 

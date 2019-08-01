@@ -1,6 +1,6 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: ORIGIN");
+header("Access-Control-Allow-Origin: http://192.168.64.2");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
@@ -9,25 +9,37 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 // necessary imports 
 require_once 'user.php';
 require_once '../config/database.php'; 
-
-// instantiate user
-$user = new User($db);
+require_once '../config/jwt.php'; 
 
 // get posted data
 $data = json_decode(file_get_contents("php://input"));
- 
-// set product property values
-$user->email = $data->email;
-$email_exists = $user->emailExists();
- 
-// generate json web token
-// check if email exists and if password is correct
-if($email_exists && password_verify($data->password, $user->password)){
-    // set response code
+
+// instantiate database and user 
+$db = new Database(); 
+
+// check db for posted data input
+$entry = $db->emailExists($data->email); 
+
+// ensure inputted email record exists 
+if ($entry != null) {
+    $user = new User($db, $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
+    if (password_verify($data->password, $user->getPassword())) {
+        http_response_code(200); 
+        $JWT = new JWT($entry['user_id'], $user->getSeminar(), $user->getFirstName()); 
+        $token = $JWT->generateJWS(); 
+
+        echo json_encode(
+            array(
+                "message" => "Successful login.",
+                "jwt" => $token
+            )
+        ); 
+    } else {
+        http_response_code(200);
+        echo json_encode(array("message" => "Incorrect password."));
+    }
+} else {
     http_response_code(200);
-
+    echo json_encode(array("message" => "User does not exist."));
 }
- 
-// login failed will be here
-
 ?>
