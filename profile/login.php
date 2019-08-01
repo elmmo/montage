@@ -1,6 +1,6 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: http://192.168.64.2");
+header("Access-Control-Allow-Origin: ORIGIN");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
@@ -25,21 +25,22 @@ if ($entry != null) {
     $user = new User($db, $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
     if (password_verify($data->password, $user->getPassword())) {
         http_response_code(200); 
-        $JWT = new JWT($entry['user_id'], $user->getSeminar(), $user->getFirstName()); 
-        $token = $JWT->generateJWS(); 
-
-        echo json_encode(
-            array(
-                "message" => "Successful login.",
-                "jwt" => $token
-            )
-        ); 
+        $JWT = new JWT(); 
+        $token = $JWT->generateJWS($entry['user_id'], $user->getSeminar(), $user->getFirstName()); 
+        if ($token != null) {
+            echo json_encode(
+                array(
+                    "message" => "Successful login.",
+                    "jwt" => $token
+                )
+            ); 
+        }
     } else {
-        http_response_code(200);
+        http_response_code(401);
         echo json_encode(array("message" => "Incorrect password."));
     }
 } else {
-    http_response_code(200);
+    http_response_code(400);
     echo json_encode(array("message" => "User does not exist."));
 }
 ?>
