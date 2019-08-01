@@ -4,22 +4,24 @@ class User {
     // database connection and table name
     private $conn;
     private $table_name = "basic";
- 
-    // object properties
-    public $id;
-    public $firstname;
-    public $lastname;
-    public $email;
-    public $seminar; 
-    public $password;
- 
-    // constructor
-    public function __construct($db){
+    private $firstname;
+    private $lastname;
+    private $email;
+    private $seminar; 
+    private $password;
+
+    // base constructor for first-time user creation
+    public function __construct($db, $first, $last, $email, $sem, $pass){
         $this->conn = $db;
+        $this->firstname = $first; 
+        $this->lastname = $last; 
+        $this->email = $email; 
+        $this->seminar = $sem; 
+        $this->password = $pass; 
     }
 
     // create new user record
-    function create(){
+    public function createDBEntry(){
     
         // insert query
         $query = "INSERT INTO " . $this->table_name . " (firstname, lastname, email, seminar, password) " .
@@ -52,7 +54,27 @@ class User {
         return false;
     }
     
-    // emailExists() method will be here
+    // update() method will be here
+
+    public function getFirstName() {
+        return $this->firstname; 
+    }
+
+    public function getLastName() {
+        return $this->lastname; 
+    }
+
+    public function getEmail() {
+        return $this->email; 
+    }
+
+    public function getSeminar() {
+        return $this->seminar; 
+    }
+
+    public function getPassword() {
+        return $this->password; 
+    }
 }
 
 ?>
