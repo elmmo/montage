@@ -1,8 +1,6 @@
 //  if token is valid, go to profile, pulling information from the db 
     // if first time login, display first time message prompting for profile details 
 
-// need support for if the status code is incorrect (login.js); 
-
 let xhr = new XMLHttpRequest(); 
 let params = new URLSearchParams(window.location.search); 
 let token = params.get('token'); 

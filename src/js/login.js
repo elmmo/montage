@@ -1,12 +1,11 @@
 let xhr = new XMLHttpRequest(); 
-let form = document.querySelector('form');
 let loginForm = document.getElementById('login');
 let base = 'ORIGIN';
 let params = new URLSearchParams(window.location.search); 
 
-let login = (form) => {
+let login = () => {
     // collect and format the sign in form data
-    let input = new FormData(form);
+    let input = new FormData(loginForm);
     let object = {};
     input.forEach((value, key) => {object[key] = value});
     let json = JSON.stringify(object);
@@ -35,7 +34,7 @@ let errorMessage = (message) => {
 window.addEventListener("load", () => {
     // trigger loginForm function when submit button pushed
     loginForm.addEventListener('submit', (event) => {
-        login(loginForm);
+        login();
         event.preventDefault(); 
     });
 
