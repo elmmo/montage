@@ -108,8 +108,6 @@ class JWT {
             // header checker will throw an exception if param is missing
             $headerCheckerManager->check($jws, 0, ['alg']);
             $claimCheckerManager->check($claims, ['iss', 'nbf', 'exp']);
-        } catch (InvalidArgumentException $e) {
-            echo $e->getMessage(); 
         } catch (Exception $e) {
             echo $e->getMessage();
         } 
