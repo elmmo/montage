@@ -71,7 +71,7 @@ class JWT {
             ->addSignature($this->key, ['alg' => 'HS256'])   // add a signature with a simple protected header
             ->build(); 
         // once key has been used, store in db
-        if ($this->db->storeKey($this->key, $id)) {
+        if ($this->db->removeExpiredKeys() && $this->db->storeKey($this->key, $id)) {
             return $this->serializer->serialize($jws, 0); // serialize the signature at index 0 (bc only have one signature)
         }
     }
@@ -108,8 +108,6 @@ class JWT {
             // header checker will throw an exception if param is missing
             $headerCheckerManager->check($jws, 0, ['alg']);
             $claimCheckerManager->check($claims, ['iss', 'nbf', 'exp']);
-        } catch (InvalidArgumentException $e) {
-            echo $e->getMessage(); 
         } catch (Exception $e) {
             echo $e->getMessage();
         } 

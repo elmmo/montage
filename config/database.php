@@ -52,6 +52,28 @@ class Database {
         }
     }
 
+    // temporary function to avoid Heroku's scheduler addon
+    // removes entries that are older than 3 hours from the keys table
+    // for prod use cron or custom scheduler
+    public function removeExpiredKeys() {
+        try { 
+            // insert query
+            $query = "DELETE FROM keys WHERE time < now() - interval '3 hours'"; 
+        
+            // prepare the query
+            $stmt = $this->pdo->prepare($query);
+        
+            // execute the query, also check if query was successful
+            if($stmt->execute()){
+                return true;
+            }
+            return false;
+        } catch (PDOException $e) {
+            echo "Error removing expired keys: " . $e->getMessage() . "<br/>";
+            die(); 
+        }
+    }
+
     // retrieve keys for active sessions and delete inactive sessions
     public function retrieveKeys() {
         try { 

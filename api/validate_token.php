@@ -1,5 +1,5 @@
 <?php 
-// necessary imports 
+// necessary imports
 require_once "../config/jwt.php";
 
 $JWT = new JWT(); 

@@ -7,7 +7,7 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
 // necessary imports 
-require_once 'user.php';
+require_once '../config/user.php';
 require_once '../config/database.php'; 
 require_once '../config/jwt.php'; 
 
