@@ -22,11 +22,11 @@ $entry = $db->emailExists($data->email);
 
 // ensure inputted email record exists 
 if ($entry != null) {
-    $user = new User($db, $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
+    $user = new User($db, $entry['username'], $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
     if (password_verify($data->password, $user->getPassword())) {
         http_response_code(200); 
         $JWT = new JWT(); 
-        $token = $JWT->generateJWS($entry['user_id'], $user->getSeminar(), $user->getFirstName()); 
+        $token = $JWT->generateJWS($entry['user_id'], $user->getUsername(), $user->getSeminar(), $user->getFirstName()); 
         if ($token != null) {
             echo json_encode(
                 array(

@@ -13,7 +13,7 @@ if ($JWT->verify($token)) {
         // set response code
         http_response_code(200);
  
-        // show user details
+        //show user details
         echo json_encode(array(
             "message" => "Access granted.",
             "data" => $JWT->getPayloadFromToken($token)

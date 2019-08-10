@@ -1,9 +1,8 @@
-//  if token is valid, go to profile, pulling information from the db 
-    // if first time login, display first time message prompting for profile details 
-// import validate from './validate.js';
+import { base, validate } from './util.js';
 
-let loadProfile = (user) => {
+let loadProfile = (data) => {
     let xhr = new XMLHttpRequest(); 
+    let user = data.user; 
     xhr.open('GET', base + 'api/profile.php/?user=' + user, true); 
     xhr.onreadystatechange = () => {
         // if token is valid
@@ -15,4 +14,4 @@ let loadProfile = (user) => {
     xhr.send(); 
 }
 
-// validate(loadProfile); 
+validate(loadProfile); 

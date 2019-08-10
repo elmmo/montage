@@ -1,33 +1,19 @@
-let xhr = new XMLHttpRequest(); 
+import { base, submitPostRequest } from './util.js';
 let loginForm = document.getElementById('login');
-let base = 'ORIGIN';
-let params = new URLSearchParams(window.location.search); 
 
 let login = () => {
-    // collect and format the sign in form data
-    let input = new FormData(loginForm);
-    let object = {};
-    input.forEach((value, key) => {object[key] = value});
-    let json = JSON.stringify(object);
-    // configure xhr request 
-    xhr.open('POST', base + 'api/login.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json'); 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            if (xhr.status == 200) {
-                let res = JSON.parse(xhr.responseText); 
-                window.location.href = base + 'profile/?token=' + res.jwt;
-            } else {
-                errorMessage(xhr.responseText.message); 
-            }
+    submitPostRequest('api/login.php', 
+    (res) => {
+        window.location.href = base + 'dashboard/?token=' + res.jwt;
+    }, 
+    'login', 
+    loginForm, 
+    (status) => {
+        if (status == 400) {
+            console.log("Incorrect password or email."); 
+            window.location.replace(base + '?redirect=' + 'incorrect-login'); 
         }
-    }
-    // submit xhr request
-    xhr.send(json); 
-}
-
-let errorMessage = (message) => {
-    console.log("Redirected here because " + message); 
+    }); 
 }
 
 // load event listener once window loads 
@@ -37,9 +23,4 @@ window.addEventListener("load", () => {
         login();
         event.preventDefault(); 
     });
-
-    // if the user is being redirected from the same origin because of an error 
-    if (params.has('redirect')) {
-        errorMessage(params.get('redirect')); 
-    }
 });

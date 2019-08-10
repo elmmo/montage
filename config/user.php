@@ -4,6 +4,7 @@ class User {
     // database connection and table name
     private $conn;
     private $table_name = "basic";
+    private $username; 
     private $firstname;
     private $lastname;
     private $email;
@@ -11,8 +12,9 @@ class User {
     private $password;
 
     // base constructor for first-time user creation
-    public function __construct($db, $first, $last, $email, $sem, $pass){
+    public function __construct($db, $username, $first, $last, $email, $sem, $pass){
         $this->conn = $db;
+        $this->username = $username; 
         $this->firstname = $first; 
         $this->lastname = $last; 
         $this->email = $email; 
@@ -24,8 +26,8 @@ class User {
     public function createDBEntry(){
     
         // insert query
-        $query = "INSERT INTO " . $this->table_name . " (firstname, lastname, email, seminar, password) " .
-            "VALUES (:firstname, :lastname, :email, :seminar, :password)"; 
+        $query = "INSERT INTO " . $this->table_name . " (firstname, lastname, email, seminar, password, username) " .
+            "VALUES (:firstname, :lastname, :email, :seminar, :password, :username)"; 
     
         // prepare the query
         $stmt = $this->conn->prepare($query);
@@ -36,12 +38,14 @@ class User {
         $this->email=htmlspecialchars(strip_tags($this->email));
         $this->seminar=htmlspecialchars(strip_tags($this->seminar));
         $this->password=htmlspecialchars(strip_tags($this->password));
+        $this->username=htmlspecialchars(strip_tags($this->username));
     
         // bind the values
         $stmt->bindParam(':firstname', $this->firstname);
         $stmt->bindParam(':lastname', $this->lastname);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':seminar', $this->seminar);
+        $stmt->bindParam(':username', $this->username);
     
         // hash the password before saving to database
         $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
@@ -53,8 +57,6 @@ class User {
         }
         return false;
     }
-    
-    // update() method will be here
 
     public function getFirstName() {
         return $this->firstname; 
@@ -74,6 +76,10 @@ class User {
 
     public function getPassword() {
         return $this->password; 
+    }
+
+    public function getUsername() {
+        return $this->username; 
     }
 }
 

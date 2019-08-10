@@ -49,7 +49,7 @@ class JWT {
     }
 
     // payload generator helper function
-    private function generatePayload($id, $sem, $firstname) {
+    private function generatePayload($id, $username, $sem, $firstname) {
         return json_encode([
             'iat' => time(), // issued at
             'nbf' => time(), // not before 
@@ -57,17 +57,18 @@ class JWT {
             'iss' => 'Montage', // issuer 
             'sem' => $sem, // seminar
             'id' => $id, // sid
-            'name' => $firstname
+            'name' => $firstname, 
+            'user' => $username
         ]);
     }
 
     // create JWS 
-    public function generateJWS($id, $sem, $firstname) {
+    public function generateJWS($id, $username, $sem, $firstname) {
         // instantiate JWS builder
         $jwsBuilder = new JWSBuilder($this->algManager);
         $jws = $jwsBuilder
             ->create()                                  // create a new JWS 
-            ->withPayload($this->generatePayload($id, $sem, $firstname))
+            ->withPayload($this->generatePayload($id, $username, $sem, $firstname))
             ->addSignature($this->key, ['alg' => 'HS256'])   // add a signature with a simple protected header
             ->build(); 
         // once key has been used, store in db
@@ -109,11 +110,11 @@ class JWT {
             $headerCheckerManager->check($jws, 0, ['alg']);
             $claimCheckerManager->check($claims, ['iss', 'nbf', 'exp']);
         } catch (Exception $e) {
-            echo $e->getMessage();
+            return false; 
         } 
 
         // load in active keys
-        $keyKs = $this->db->retrieveKeys(); 
+        $keyKs = $this->db->retrieve("key", "keys"); 
         $keys = array(); 
         foreach ($keyKs as $keyK) {
             $jwk = new JWK([

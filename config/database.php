@@ -74,11 +74,14 @@ class Database {
         }
     }
 
-    // retrieve keys for active sessions and delete inactive sessions
-    public function retrieveKeys() {
+    // retrieve info from the db 
+    // $rows: string            which rows to retrieve 
+    // $table_name: string      the name of the table to retrieve from
+    // $condition: string       any additional conditions for retrieving
+    public function retrieve($rows, $table_name, $condition = "") {
         try { 
             // insert query
-            $query = "SELECT key FROM keys"; 
+            $query = "SELECT $rows FROM $table_name $condition"; 
         
             // prepare the query
             $stmt = $this->pdo->prepare($query);
@@ -89,9 +92,18 @@ class Database {
 
             return $num > 0 ? $stmt->fetchAll() : null; 
         } catch (PDOException $e) {
-            echo "Error retrieving keys from database: " . $e->getMessage() . "<br/>";
+            echo ("Error retrieving " . $rows . " from table " . $table_name . ": " . $e->getMessage() . "<br/>"); 
             die(); 
         }
+    }
+
+    public function getUserById($id) {
+        return $this->retrieve("*", "basic, profile", "WHERE basic.user_id = " + $id + " AND profile.user_id = " + $id);
+    }
+
+    // gets the user id of a user by their username
+    public function getUserIdByUsername($username) {
+        return $this->retrieve("user_id", "basic", "WHERE username = '$username'");
     }
 
     // returns user info if email exists, else null
