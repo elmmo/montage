@@ -16,10 +16,10 @@ $db = new Database();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $id = $db->getUserIdByUsername($_GET['user']); 
+        $id = $db->getUserIdByUsername($_GET['user']);
         $profile = $db->getUserById($id); 
         http_response_code(200);
-        echo json_encode(array("message" => $profile));
+        echo json_encode($profile);
     } catch (InvalidArgumentException $e) {
         http_response_code(400);
         echo json_encode(array("message" => "User doesn't exist."));

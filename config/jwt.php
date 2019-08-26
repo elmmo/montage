@@ -53,7 +53,7 @@ class JWT {
         return json_encode([
             'iat' => time(), // issued at
             'nbf' => time(), // not before 
-            'exp' => time() + 7100, // expiration
+            'exp' => time() + 7200, // expiration
             'iss' => 'Montage', // issuer 
             'sem' => $sem, // seminar
             'id' => $id, // sid
@@ -119,7 +119,7 @@ class JWT {
         foreach ($keyKs as $keyK) {
             $jwk = new JWK([
                 'kty' => 'oct',
-                'k' => $keyK['key']
+                'k' => $keyK
             ]);
             array_push($keys, $jwk);
         }

@@ -1,8 +1,21 @@
-let base = 'http://192.168.64.2/montage/';
+let base = 'ORIGIN/montage/';
 
 // the default error handler
 let errorMessage = (message) => {
     console.log("Redirected here because " + message); 
+}
+
+// takes out all special chars except periods, and underscores and strips trailing whitespace
+let stripSpecialChars = (input, spaceSeparator = "") => {
+    return input.replace(/[^a-zA-Z._ ]/g, '')
+        .trim()
+        .replace(/\s+/g, spaceSeparator); 
+}
+
+// gets desired params from the url
+let getParams = (query) => {
+    let params = new URLSearchParams(window.location.search); 
+    return params.has(query) ? params.get(query) : null; 
 }
 
 // uses submitPostRequest to validate the token passed
@@ -10,21 +23,21 @@ function validate(callback) {
     submitPostRequest('api/validate_token.php', callback, 'validate', null, (status) => {
         if (status == 401) {
             // in the case that the token expired or couldn't be authenticated
-            window.location.replace(base + '?redirect=' + 'token'); 
+            //window.location.replace(base + '?redirect=' + 'token'); 
         } else { 
-            window.location.replace(base + 'error/?code=' + status); 
+           // window.location.replace(base + 'error/?code=' + status); 
         }
     }); 
 }
 
-// a general function for submitting ajax requests
+// a general function for submitting ajax post requests
 function submitPostRequest(apiPath, callback, type, form = null, errorHandler = errorMessage) {
     let xhr = new XMLHttpRequest(); 
-    let params = new URLSearchParams(window.location.search); 
-    let token = params.has('token') ? params.get('token') : null; 
+    let token = getParams('token'); 
 
     // collect and format the data 
     if (type == 'validate') {
+        console.log("validate2"); 
         // to format the json web token
         var json = null; 
         if (token) {
@@ -52,6 +65,7 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
                     let res = JSON.parse(xhr.responseText); 
                     callback(res); 
                 } else {
+                    console.log("error here"); 
                     errorHandler(); 
                 }
             }
@@ -63,4 +77,20 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
     }
 }
 
-export { base, validate, submitPostRequest }; 
+// a general function for submitting ajax requests
+function submitGetRequest(apiPath, callback, param = "") {
+    let xhr = new XMLHttpRequest(); 
+    xhr.open('GET', base + apiPath + param, true); 
+    xhr.onreadystatechange = () => {
+        // if token is valid
+        if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+            console.log(xhr.responseText); 
+            let res = JSON.parse(xhr.responseText); 
+            callback(res); 
+        }
+    };
+    // submit xhr request
+    xhr.send(); 
+}
+
+export { base, stripSpecialChars, getParams, validate, submitPostRequest, submitGetRequest }; 
