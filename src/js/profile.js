@@ -1,31 +1,49 @@
-//  if token is valid, go to profile, pulling information from the db 
-    // if first time login, display first time message prompting for profile details 
+import { base, submitGetRequest, stripSpecialChars, getParams } from './util.js';
 
-let xhr = new XMLHttpRequest(); 
-let params = new URLSearchParams(window.location.search); 
-let token = params.get('token'); 
-let base = 'ORIGIN';
+// social media options 
+let supportedSocial = ["insta", "snap"]; 
 
-// verifies the token passed through the url 
-if (token) {
-    let json = JSON.stringify({'jwt': token});
-    xhr.open('POST', base + 'api/validate_token.php', true); 
-    xhr.setRequestHeader('Content-Type', 'application/json'); 
-    xhr.onreadystatechange = () => {
-        // if token is valid
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            if (xhr.status == 200) {
-                console.log(xhr.responseText); 
-                let res = JSON.parse(xhr.responseText); 
-                let name = document.createTextNode("Welcome, " + res.data.name);
-                document.body.appendChild(name);
-            } else {
-                window.location.replace(base + 'error/?code=' + xhr.status); 
+let loadProfile = () => {
+    let user = getParams('user'); 
+    user = stripSpecialChars(user); 
+    if (user != null) {
+        submitGetRequest('api/profile.php/?user=', addToDOM, user); 
+    } else { 
+        // bad profile request
+        window.location.replace(base + "error/?code=400"); 
+    }
+}
+
+let addToDOM = (res) => {
+    let profileData = document.getElementById("profileData"); 
+    for (let key in res) {
+        if (res.hasOwnProperty(key) && res[key] != null) {
+            if (supportedSocial.includes(key)) {
+                // for social media profile info 
+                let valueNode = document.createTextNode(res[key]); 
+                let socialIcon = document.getElementById(key);
+                socialIcon.appendChild(valueNode); 
+                socialIcon.setAttribute("visibility", "visible"); 
+                //valueNode.appendChild(document.createElement("br")); 
+            } else { 
+                // adds the key to the table 
+                let row = document.createElement("tr"); 
+                let cell = document.createElement("td"); 
+                row.appendChild(cell); 
+                cell.appendChild(document.createTextNode(key)); 
+                // adds the value to the table
+                cell = document.createElement("td"); 
+                row.appendChild(cell); 
+                cell.appendChild(document.createTextNode(res[key])); 
+                // append row to table 
+                profileData.appendChild(row); 
             }
         }
-    };
-    // submit xhr request
-    xhr.send(json); 
-} else {
-    window.location.replace(base + '?redirect=' + 'token'); 
+    }
 }
+
+// load event listener once window loads 
+window.addEventListener("load", () => {
+    loadProfile(); 
+    event.preventDefault(); 
+});

@@ -1,23 +1,12 @@
 <!DOCTYPE html> 
 <html>
     <head>
-        <title>Profile | Montage</title>
+        <title>Edit Profile | Montage</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <script src="https://kit.fontawesome.com/583dcbd373.js"></script>
     </head>
     <body>
-        <p><a href="edit.html">Edit Profile</a></p>
-        <!-- holds all current profile information -->
-        <div id="profileContainer">
-            <table id="profileData">
-            </table>
-        </div>
-        <div id="socialContainer">
-            <i id="insta" class="fab fa-instagram"></i>
-            <i id="snap" class="fab fa-snapchat-ghost"></i>
-        </div>
-        <!-- edit profile form -->
-        <form name="editUser" id="editUser">
+        <p><a href="index.html">Profile</a></p>
+        <form name="editU" id="createNewUser">
             <p><label for="username">Username:</label><input type="text" name="username" /></p>
             <p><label>Name:</label><input type="text" name="firstname" /><input type="text" name="lastname" required/></p>
             <p><label for="email">Email:</label><input type="email" name="email" required/></p>
@@ -29,6 +18,6 @@
             <p><input type="submit" name="submit" /></p>
         </form>
     </body>
+    <script type="module" src="../src/js/edit.js"></script>
     <script type="module" src="../src/js/util.js"></script>
-    <script type="module" src="../src/js/profile.js"></script>
 </html>

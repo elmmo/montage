@@ -6,6 +6,7 @@
     </head>
     <body>
         <form name="createNewUser" id="createNewUser">
+            <p><label for="username">Username:</label><input type="text" name="username" /></p>
             <p><label>Name:</label><input type="text" name="firstname" /><input type="text" name="lastname" required/></p>
             <p><label for="email">Email:</label><input type="email" name="email" required/></p>
             <label for="seminar">Seminar:</label><br>
@@ -16,5 +17,6 @@
             <p><input type="submit" name="submit" /></p>
         </form>
     </body>
-    <script src="../src/js/new.js"></script>
+    <script type="module" src="../src/js/util.js"></script>
+    <script type="module" src="../src/js/new.js"></script>
 </html>

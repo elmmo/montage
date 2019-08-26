@@ -17,16 +17,16 @@ $data = json_decode(file_get_contents("php://input"));
 // instantiate database and user 
 $db = new Database(); 
 
-// check db for posted data input
-$entry = $db->emailExists($data->email); 
+// checks db for posted data input
+$entry = $db->userExists($data->email, "email"); 
 
 // ensure inputted email record exists 
 if ($entry != null) {
-    $user = new User($db, $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
+    $user = new User($db, $entry['username'], $entry['firstname'], $entry['lastname'], $entry['email'], $entry['seminar'], $entry['password']); 
     if (password_verify($data->password, $user->getPassword())) {
         http_response_code(200); 
         $JWT = new JWT(); 
-        $token = $JWT->generateJWS($entry['user_id'], $user->getSeminar(), $user->getFirstName()); 
+        $token = $JWT->generateJWS($entry['user_id'], $user->getUsername(), $user->getSeminar(), $user->getFirstName()); 
         if ($token != null) {
             echo json_encode(
                 array(
@@ -41,6 +41,6 @@ if ($entry != null) {
     }
 } else {
     http_response_code(400);
-    echo json_encode(array("message" => "User does not exist."));
+    echo json_encode(array("message" => $entry));
 }
 ?>

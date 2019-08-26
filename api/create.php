@@ -14,10 +14,12 @@ require_once '../config/database.php';
 $data = json_decode(file_get_contents("php://input"));
 
 $db = new Database(); 
-$user = new User($db->pdo, $data->firstname, $data->lastname, $data->email, $data->seminar, $data->password); 
+$user = new User($db->pdo, $data->username, $data->firstname, $data->lastname, $data->email, $data->seminar, $data->password); 
 
 // check if the user already exists
-if ($db->emailExists($user->getEmail()) == null) {
+if ($db->userExists($user->getEmail(), "email") == null) {
+    http_response_code(200);
+    echo json_encode(array("message" => "HERE."));
     if($user->createDBEntry()) {
         // case: user created
         http_response_code(200);
@@ -28,6 +30,7 @@ if ($db->emailExists($user->getEmail()) == null) {
         echo json_encode(array("message" => "Unable to create user."));
     }
 } else {
+    // case: user already exists
     http_response_code(200);
     echo json_encode(array("message" => "User already exists."));
 }

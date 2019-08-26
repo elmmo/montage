@@ -74,11 +74,14 @@ class Database {
         }
     }
 
-    // retrieve keys for active sessions and delete inactive sessions
-    public function retrieveKeys() {
+    // retrieve info from the db 
+    // $rows: string            which rows to retrieve 
+    // $table_name: string      the name of the table to retrieve from
+    // $condition: string       any additional conditions for retrieving
+    public function retrieve($rows, $table_name, $condition = "") {
         try { 
             // insert query
-            $query = "SELECT key FROM keys"; 
+            $query = "SELECT $rows FROM $table_name $condition"; 
         
             // prepare the query
             $stmt = $this->pdo->prepare($query);
@@ -87,17 +90,38 @@ class Database {
             // get number of rows
             $num = $stmt->rowCount();
 
-            return $num > 0 ? $stmt->fetchAll() : null; 
+            return $num > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : null; 
         } catch (PDOException $e) {
-            echo "Error retrieving keys from database: " . $e->getMessage() . "<br/>";
+            echo ("Error retrieving " . $rows . " from table " . $table_name . ": " . $e->getMessage() . "<br/>"); 
             die(); 
         }
     }
 
-    // returns user info if email exists, else null
-    public function emailExists($input) {
-        // check if email exists
-        $query = "SELECT * FROM basic WHERE email = :email LIMIT 1"; 
+    // gets all public user data and prevents exposure of sensitive information
+    public function getUserById($id) {
+        $id = $id['user_id']; 
+        return $this->retrieve("basic.username, 
+                                profile.bio, 
+                                basic.firstname, 
+                                basic.lastname, 
+                                profile.major, 
+                                profile.minor, 
+                                basic.email, 
+                                profile.insta, 
+                                profile.snap", 
+                                "basic, profile",
+                                "WHERE basic.user_id = $id AND profile.user_id = $id");
+    }
+
+    // gets the user id of a user by their username
+    public function getUserIdByUsername($username) {
+        return $this->retrieve("user_id", "basic", "WHERE username = '$username'");
+    }
+
+    // returns user info if email or username exists, else null
+    public function userExists($input, $type) {
+        // check if user exists
+        $query = "SELECT * FROM basic WHERE " . $type . " = :input LIMIT 1"; 
 
         // prepare the query
         $stmt = $this->pdo->prepare($query);
@@ -107,7 +131,7 @@ class Database {
         $input=rtrim($input); 
     
         // bind given email value
-        $stmt->bindParam(':email', $input);
+        $stmt->bindParam(':input', $input);
     
         // execute the query
         $stmt->execute();
