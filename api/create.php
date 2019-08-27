@@ -1,6 +1,6 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: ORIGIN");
+header("Access-Control-Allow-Origin: whit23");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");

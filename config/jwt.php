@@ -119,12 +119,11 @@ class JWT {
         foreach ($keyKs as $keyK) {
             $jwk = new JWK([
                 'kty' => 'oct',
-                'k' => $keyK
+                'k' => $keyK['key']
             ]);
             array_push($keys, $jwk);
         }
         $jwkset = new JWKSet($keys); 
-
 
         // verify signature - args: 
             // jws: the JWS object 

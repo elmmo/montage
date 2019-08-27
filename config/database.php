@@ -90,7 +90,7 @@ class Database {
             // get number of rows
             $num = $stmt->rowCount();
 
-            return $num > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : null; 
+            return $num > 0 ? $stmt->fetchAll() : null; 
         } catch (PDOException $e) {
             echo ("Error retrieving " . $rows . " from table " . $table_name . ": " . $e->getMessage() . "<br/>"); 
             die(); 

@@ -1,7 +1,9 @@
-import { base, validate } from './util.js';
+import { validate, getParams } from './util.js';
 
-let loadProfile = (data) => {
+let token = getParams('token', true); 
+
+let load = (data) => {
     console.log("Hello World, I've just loaded from Dashboard."); 
 }
 
-validate(loadProfile); 
+validate(load, token); 

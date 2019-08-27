@@ -4,13 +4,10 @@ import { base, submitGetRequest, stripSpecialChars, getParams } from './util.js'
 let supportedSocial = ["insta", "snap"]; 
 
 let loadProfile = () => {
-    let user = getParams('user'); 
+    let user = getParams('user', true); 
     user = stripSpecialChars(user); 
     if (user != null) {
         submitGetRequest('api/profile.php/?user=', addToDOM, user); 
-    } else { 
-        // bad profile request
-        window.location.replace(base + "error/?code=400"); 
     }
 }
 

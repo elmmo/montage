@@ -1,4 +1,4 @@
-let base = 'ORIGIN/montage/';
+let base = 'whit23/montage/';
 
 // the default error handler
 let errorMessage = (message) => {
@@ -13,19 +13,26 @@ let stripSpecialChars = (input, spaceSeparator = "") => {
 }
 
 // gets desired params from the url
-let getParams = (query) => {
+// query: string with the desired query to search for 
+// required: whether or not to redirect as an error if the param isn't found 
+let getParams = (query, required) => {
     let params = new URLSearchParams(window.location.search); 
-    return params.has(query) ? params.get(query) : null; 
+    if (params.has(query)) return params.get(query); 
+    if (required) { 
+        console.log("Parameter not found."); 
+        window.location.replace(base + 'error/?code=400'); 
+    }
+    return null; 
 }
 
 // uses submitPostRequest to validate the token passed
-function validate(callback) {
-    submitPostRequest('api/validate_token.php', callback, 'validate', null, (status) => {
+function validate(callback, token) {
+    submitPostRequest('api/validate_token.php/?token=' + token, callback, 'validate', null, (status) => {
         if (status == 401) {
             // in the case that the token expired or couldn't be authenticated
-            //window.location.replace(base + '?redirect=' + 'token'); 
+            window.location.replace(base + '?redirect=' + 'token'); 
         } else { 
-           // window.location.replace(base + 'error/?code=' + status); 
+           //window.location.replace(base + 'error/?code=' + status); 
         }
     }); 
 }
@@ -33,11 +40,10 @@ function validate(callback) {
 // a general function for submitting ajax post requests
 function submitPostRequest(apiPath, callback, type, form = null, errorHandler = errorMessage) {
     let xhr = new XMLHttpRequest(); 
-    let token = getParams('token'); 
+    let token = getParams('token', false); 
 
     // collect and format the data 
     if (type == 'validate') {
-        console.log("validate2"); 
         // to format the json web token
         var json = null; 
         if (token) {
@@ -65,7 +71,6 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
                     let res = JSON.parse(xhr.responseText); 
                     callback(res); 
                 } else {
-                    console.log("error here"); 
                     errorHandler(); 
                 }
             }
