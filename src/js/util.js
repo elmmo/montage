@@ -38,7 +38,7 @@ function validate(callback, token) {
 }
 
 // a general function for submitting ajax post requests
-function submitPostRequest(apiPath, callback, type, form = null, errorHandler = errorMessage) {
+let submitPostRequest = (apiPath, callback, type, form = null, errorHandler = errorMessage) => {
     let xhr = new XMLHttpRequest(); 
     let token = getParams('token', false); 
 
@@ -66,8 +66,6 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status == 200) {
-                    console.log(type); 
-                    console.log(xhr.responseText); 
                     let res = JSON.parse(xhr.responseText); 
                     callback(res); 
                 } else {
@@ -83,14 +81,13 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
 }
 
 // a general function for submitting ajax requests
-function submitGetRequest(apiPath, callback, param = "") {
+let submitGetRequest = (apiPath, callback, param = "") => {
     let xhr = new XMLHttpRequest(); 
     if (param != "") param = stripSpecialChars(param); 
     xhr.open('GET', base + apiPath + param, true); 
     xhr.onreadystatechange = () => {
         // if token is valid
         if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-            console.log(xhr.responseText); 
             let res = JSON.parse(xhr.responseText); 
             callback(res); 
         }
@@ -99,4 +96,18 @@ function submitGetRequest(apiPath, callback, param = "") {
     xhr.send(); 
 }
 
-export { base, stripSpecialChars, getParams, validate, submitPostRequest, submitGetRequest }; 
+// gets the value of any stored cookie by name from local storage 
+let getCookie = (name) => {
+    name = name + "=";
+    let cookieArray = document.cookie.split(';');
+    for (let i = 0; i <= cookieArray.length; i++) {
+        let cookie = cookieArray[i]; 
+        cookie = cookie.substring(1, cookie.length);
+        if (cookie.indexOf(name) == 0) {
+            return cookie.substring(name.length, cookie.length); 
+        }
+    }
+    return null; 
+}
+
+export { base, stripSpecialChars, getParams, validate, submitPostRequest, submitGetRequest, getCookie }; 

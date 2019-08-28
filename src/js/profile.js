@@ -1,4 +1,4 @@
-import { base, submitGetRequest, getParams } from './util.js';
+import { submitGetRequest, getParams, getCookie } from './util.js';
 
 // social media options 
 let supportedSocial = ["insta", "snap"]; 
