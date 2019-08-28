@@ -90,7 +90,7 @@ class Database {
             // get number of rows
             $num = $stmt->rowCount();
 
-            return $num > 0 ? $stmt->fetchAll() : null; 
+            return $num > 0 ? $stmt->fetchAll(PDO::FETCH_ASSOC) : null; 
         } catch (PDOException $e) {
             echo ("Error retrieving " . $rows . " from table " . $table_name . ": " . $e->getMessage() . "<br/>"); 
             die(); 
@@ -99,11 +99,10 @@ class Database {
 
     // gets all public user data and prevents exposure of sensitive information
     public function getUserById($id) {
-        $id = $id['user_id']; 
         return $this->retrieve("basic.username, 
-                                profile.bio, 
                                 basic.firstname, 
                                 basic.lastname, 
+                                profile.bio, 
                                 profile.major, 
                                 profile.minor, 
                                 basic.email, 

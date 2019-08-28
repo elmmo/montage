@@ -7,9 +7,9 @@ let errorMessage = (message) => {
 
 // takes out all special chars except periods, and underscores and strips trailing whitespace
 let stripSpecialChars = (input, spaceSeparator = "") => {
-    return input.replace(/[^a-zA-Z._ ]/g, '')
+    return input != null ? input.replace(/[^a-zA-Z._ ]/g, '')
         .trim()
-        .replace(/\s+/g, spaceSeparator); 
+        .replace(/\s+/g, spaceSeparator) : ""; 
 }
 
 // gets desired params from the url
@@ -85,6 +85,7 @@ function submitPostRequest(apiPath, callback, type, form = null, errorHandler = 
 // a general function for submitting ajax requests
 function submitGetRequest(apiPath, callback, param = "") {
     let xhr = new XMLHttpRequest(); 
+    if (param != "") param = stripSpecialChars(param); 
     xhr.open('GET', base + apiPath + param, true); 
     xhr.onreadystatechange = () => {
         // if token is valid

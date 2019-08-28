@@ -18,8 +18,6 @@ $user = new User($db->pdo, $data->username, $data->firstname, $data->lastname, $
 
 // check if the user already exists
 if ($db->userExists($user->getEmail(), "email") == null) {
-    http_response_code(200);
-    echo json_encode(array("message" => "HERE."));
     if($user->createDBEntry()) {
         // case: user created
         http_response_code(200);
