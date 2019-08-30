@@ -5,8 +5,7 @@ require_once "../config/jwt.php";
 $JWT = new JWT(); 
 
 // get jwt
-$data = json_decode(file_get_contents("php://input"));
-$token = isset($data->jwt) ? $data->jwt : "";
+$token = isset($_GET['token']) ? $_GET['token'] : "";
 
 if ($JWT->verify($token)) {
     if ($JWT->getPayloadFromToken($token)) {

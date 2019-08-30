@@ -1,6 +1,6 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: ORIGIN");
+header("Access-Control-Allow-Origin: http://192.168.64.2");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
@@ -18,8 +18,6 @@ $user = new User($db->pdo, $data->username, $data->firstname, $data->lastname, $
 
 // check if the user already exists
 if ($db->userExists($user->getEmail(), "email") == null) {
-    http_response_code(200);
-    echo json_encode(array("message" => "HERE."));
     if($user->createDBEntry()) {
         // case: user created
         http_response_code(200);

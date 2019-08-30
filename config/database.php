@@ -90,7 +90,7 @@ class Database {
             // get number of rows
             $num = $stmt->rowCount();
 
-            return $num > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : null; 
+            return $num > 0 ? $stmt->fetchAll(PDO::FETCH_ASSOC) : null; 
         } catch (PDOException $e) {
             echo ("Error retrieving " . $rows . " from table " . $table_name . ": " . $e->getMessage() . "<br/>"); 
             die(); 
@@ -99,11 +99,10 @@ class Database {
 
     // gets all public user data and prevents exposure of sensitive information
     public function getUserById($id) {
-        $id = $id['user_id']; 
         return $this->retrieve("basic.username, 
-                                profile.bio, 
                                 basic.firstname, 
                                 basic.lastname, 
+                                profile.bio, 
                                 profile.major, 
                                 profile.minor, 
                                 basic.email, 
@@ -119,6 +118,8 @@ class Database {
     }
 
     // returns user info if email or username exists, else null
+    // $input   string - the username or email to test 
+    // $type    string - username or email 
     public function userExists($input, $type) {
         // check if user exists
         $query = "SELECT * FROM basic WHERE " . $type . " = :input LIMIT 1"; 
@@ -148,6 +149,41 @@ class Database {
     
         // return null if email does not exist in the database
         return null; 
+    }
+
+    // update existing user information 
+    public function update($tablename, $data, $username, $id) {
+        // check if the user is valid 
+        if ($this->userExists($username, "username") != null) {
+            // prepare the query 
+            $query = "UPDATE $tablename SET "; 
+            foreach ($data as $key => $value) {
+                // set up parameters
+                $query = $query . $key . " = :" . $key . ", ";
+            }
+            $query = $query . "WHERE user_id = :user_id RETURNING *"; 
+
+            // strips the last comma from the string 
+            $last = strrpos($query, ","); 
+            $query = substr_replace($query, "", $last, 1);
+
+            $stmt = $this->pdo->prepare($query);
+
+            // bind values 
+            foreach ($data as $key => $value) {
+                $param = ':' . $key; 
+                $stmt->bindParam($param, $data[$key]); 
+            }
+            $stmt->bindParam(':user_id', $id);
+
+            // submit query 
+            $stmt->execute(); 
+
+            // get num of rows 
+            $num = $stmt->rowCount();
+
+            return $num > 0; 
+        }
     }
 }
 ?>
