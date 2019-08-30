@@ -1,4 +1,4 @@
-import { submitGetRequest, getParams, getCookie } from './util.js';
+import { submitGetRequest, submitPutRequest, stripSpecialChars, getParams, getCookie } from './util.js';
 
 // social media options 
 let supportedSocial = ["insta", "snap"]; 
@@ -37,8 +37,30 @@ let addProfileToDOM = (res) => {
     }
 }
 
+let updateUser = (form) => {
+    let username = getCookie("user");
+    let id = getCookie("id");
+    // sanitize data 
+    let elements = form.elements; 
+    for (let i = 0; i < elements.length; i++) {
+        if (elements[i].value != "" && elements[i].type != "email") {
+            elements[i].value = stripSpecialChars(elements[i].value); 
+        }
+    }
+    console.log(form); 
+    submitPutRequest(form, "api/profile.php/?user=" + username + "&id=" + id, () => {
+        console.log("success"); 
+    }); 
+}
+
 // load event listener once window loads 
 window.addEventListener("load", () => {
     loadProfile(); 
-    event.preventDefault(); 
+
+    // trigger update when submit button pushed 
+    let updateForm = document.getElementById("editUser"); 
+    updateForm.addEventListener('submit', (event) => {
+        event.preventDefault(); 
+        updateUser(updateForm); 
+    })
 });
